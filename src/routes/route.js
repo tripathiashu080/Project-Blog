@@ -1,31 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const authorController= require("../controller/authorController")
-const blogController = require("../controller/blogController")
-const loginController = require("../controller/loginController")
-const middleware = require("../middleware/Auth")
+const authorController = require('../controller/authorController.js');
+const blogController = require('../controller/blogController.js');
+const authorLogin = require('../controller/loginController.js');
+const middleware = require('../middleware/middleware.js');
 
+//authors
+router.post('/authors', authorController.author) //create authors
 
-//API for create Author
-router.post("/authors", authorController.createAuthor)
+router.post('/login', authorLogin.login) //login
 
+//blogs
+router.post('/blogs',middleware.authenticate, blogController.createBlog) //create blogs
 
+router.get('/blogs',middleware.authenticate, blogController.getBlog) //get blogs
 
-//API For Create blog, Details of blog, Update the blog, Delete the blog
-router.post("/blogs", middleware.authenticate, blogController.createBlog)
+router.put('/blogs/:authorId/:blogId',middleware.authenticate, middleware.authorize, blogController.updateBlog) //update blogs
 
-router.get("/blogs/:authorId", middleware.authenticate, blogController.getBlogs)
+//delete
+router.delete('/blogs/:authorId/:blogId',middleware.authenticate, middleware.authorize, blogController.deleteBlogById)  //delete by Id
 
-router.put("/updateblogs/:authorId/:blogId", middleware.authenticate, middleware.authorize, blogController.updateblog)
+router.delete('/blogs/:authorId',middleware.authenticate, middleware.authorize, blogController.deleteBlogByQuery)  //delete by Query
 
-router.delete("/deleteblogs/:authorId/:blogId",middleware.authenticate, middleware.authorize, blogController.deletebyId)
+router.get("/getAllBlogs", blogController.getAllBLogs)
 
-router.delete("/deleteblogs/:authorId", middleware.authenticate, middleware.authorize, blogController.deletebyQuery)
-
-router.post("/login",loginController.loginUser)
-
-
-
-
-
-module.exports = router
+module.exports = router;
